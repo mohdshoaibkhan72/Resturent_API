@@ -9,12 +9,22 @@ const User = require("./Models/UserModel");
 
 const app = express();
 app.use(express.json());
-const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",").map((origin) =>
-  origin.trim()
-);
+
+// Define the allowed origins directly in the code
+const allowedOrigins = [
+  "https://resutrents-clients.vercel.app",
+  "http://localhost:5173",
+];
+
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
